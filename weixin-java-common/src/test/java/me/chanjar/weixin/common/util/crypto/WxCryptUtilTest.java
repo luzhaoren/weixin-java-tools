@@ -1,20 +1,19 @@
 package me.chanjar.weixin.common.util.crypto;
 
-import org.testng.annotations.Test;
+import java.io.IOException;
+import java.io.StringReader;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.testng.annotations.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
-import java.io.StringReader;
-
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.fail;
+import static org.testng.Assert.*;
 
 @Test
 public class WxCryptUtilTest {
@@ -40,6 +39,7 @@ public class WxCryptUtilTest {
     System.out.println(encryptedXml);
 
     DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+    documentBuilderFactory.setExpandEntityReferences(false);
     DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
     Document document = documentBuilder.parse(new InputSource(new StringReader(encryptedXml)));
 
@@ -77,11 +77,12 @@ public class WxCryptUtilTest {
   }
 
   public void testValidateSignatureError() throws ParserConfigurationException, SAXException,
-          IOException {
+    IOException {
     try {
       WxCryptUtil pc = new WxCryptUtil(this.token, this.encodingAesKey, this.appId);
       String afterEncrpt = pc.encrypt(this.replyMsg);
       DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+      dbf.setExpandEntityReferences(false);
       DocumentBuilder db = dbf.newDocumentBuilder();
       StringReader sr = new StringReader(afterEncrpt);
       InputSource is = new InputSource(sr);
